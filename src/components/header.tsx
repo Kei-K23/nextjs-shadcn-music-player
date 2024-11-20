@@ -8,7 +8,7 @@ export default function Header() {
   return (
     <header className="mb-6 flex justify-end">
       <Link
-        href={"https://github.com/Kei-K23/next-shadcn-music-player"}
+        href={"https://github.com/Kei-K23/nextjs-shadcn-music-player"}
         target="_blank"
         className={cn(
           buttonVariants({
