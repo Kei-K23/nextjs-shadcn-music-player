@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
 import { useMusicPlayerStore } from "@/store/use-music-player-store";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { ModeToggle } from "./mode-toggle";
 
 export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -35,6 +36,7 @@ export default function MusicPlayer() {
     nextTrack,
     prevTrack,
   } = useMusicPlayerStore();
+  const [trackDirection, setTrackDirection] = useState("");
 
   useEffect(() => {
     if (audioRef.current) {
@@ -72,22 +74,33 @@ export default function MusicPlayer() {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-background border rounded-lg shadow-lg">
+      <div className="flex justify-end">
+        <ModeToggle />
+      </div>
       <div className="flex flex-col md:flex-row items-center gap-6">
-        <motion.div
-          className="w-64 h-64 rounded-lg overflow-hidden"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="w-full h-full relative">
-            <Image
-              src={currentTrack?.cover || "/img/music-notes.png"}
-              alt={currentTrack?.title || "Album cover"}
-              className="object-cover"
-              fill
-            />
-          </div>
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`cover-${currentTrack?.id}-${trackDirection}`}
+            className="w-64 h-64 rounded-lg overflow-hidden"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{
+              opacity: 0,
+              x: trackDirection === "next" ? -30 : 30,
+              scale: 0.8,
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="w-full h-full relative rounded-lg">
+              <Image
+                src={currentTrack?.cover || "/img/music-notes.png"}
+                alt={currentTrack?.title || "Album cover"}
+                className="object-cover rounded-lg"
+                fill
+              />
+            </div>
+          </motion.div>
+        </AnimatePresence>
         <div className="flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -132,6 +145,7 @@ export default function MusicPlayer() {
               variant="ghost"
               size="icon"
               onClick={() => {
+                setTrackDirection("previous");
                 if (!currentTrack && !isPlaying) {
                   setIsPlaying(true);
                   setTrack(playlist[playlist.length - 1]);
@@ -147,6 +161,7 @@ export default function MusicPlayer() {
               size="icon"
               onClick={() => {
                 if (!currentTrack && !isPlaying) {
+                  setTrackDirection("next");
                   setIsPlaying(true);
                   setTrack(playlist[0]);
                   return;
@@ -160,6 +175,7 @@ export default function MusicPlayer() {
               variant="ghost"
               size="icon"
               onClick={() => {
+                setTrackDirection("next");
                 if (!currentTrack && !isPlaying) {
                   setIsPlaying(true);
                   setTrack(playlist[0]);
