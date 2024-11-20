@@ -28,7 +28,7 @@ interface MusicPlayerStore {
 export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
   currentTrack: null,
   isPlaying: false,
-  volume: 50,
+  volume: 0.5,
   shuffle: false,
   repeat: false,
   playlist: [
@@ -59,19 +59,20 @@ export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
     },
     {
       id: "track-4",
-      title: "Billie Jean",
-      artist: "Michael Jackson",
+      title: "Sparkle",
+      artist: "Radwhimps",
       album: "Thriller",
       cover: "/img/sparkle_img.jpg",
       audio: "/sounds/Sparkle _ Your Name AMV (128 kbps).mp3",
     },
     {
       id: "track-5",
-      title: "Billie Jean",
-      artist: "Michael Jackson",
+      title: "Nandemonaiya",
+      artist: "Radwhimps",
       album: "Thriller",
-      cover: "/placeholder.svg?height=300&width=300",
-      audio: "https://example.com/billie-jean.mp3",
+      cover: "/img/nandemonaiya_img.jpg",
+      audio:
+        "/sounds/NandemonaiyaRadwhimps_from_Your_name_君の名はJpn_Rom_Myan.mp3",
     },
   ],
   setTrack: (track) => set({ currentTrack: track }),
