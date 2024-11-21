@@ -29,7 +29,7 @@ export function LyricsDisplay({ lyrics, currentTime }: LyricsDisplayProps) {
   }, [currentTime, lyrics, activeLyricIndex]);
 
   return (
-    <div className="h-48 overflow-hidden relative">
+    <div className="h-48 mt-4 overflow-hidden w-full relative">
       <AnimatePresence>
         {lyrics.map((lyric, index) => (
           <motion.div

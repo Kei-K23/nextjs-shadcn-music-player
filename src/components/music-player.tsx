@@ -13,6 +13,7 @@ import {
   Pause,
   Repeat,
   Shuffle,
+  Music,
 } from "lucide-react";
 import { useMusicPlayerStore } from "@/store/use-music-player-store";
 import Image from "next/image";
@@ -40,6 +41,7 @@ export default function MusicPlayer() {
   const [trackDirection, setTrackDirection] = useState("");
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [showLyrics, setShowLyrics] = useState(false);
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
@@ -88,7 +90,7 @@ export default function MusicPlayer() {
       <div className="flex justify-end">
         <ModeToggle />
       </div>
-      <div className="flex flex-col md:flex-row items-center gap-6">
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={`cover-${currentTrack?.id}-${trackDirection}`}
@@ -112,7 +114,7 @@ export default function MusicPlayer() {
             </div>
           </motion.div>
         </AnimatePresence>
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentTrack?.id}
@@ -123,7 +125,20 @@ export default function MusicPlayer() {
               className="text-center md:text-left"
             >
               <h2 className="text-2xl font-bold mb-2">
-                {currentTrack?.title || "No track selected"}
+                {currentTrack?.title || "No track selected"}{" "}
+                {currentTrack && (
+                  <Button
+                    onClick={() => setShowLyrics(!showLyrics)}
+                    variant={"ghost"}
+                    size={"icon"}
+                  >
+                    <Music
+                      className={
+                        showLyrics ? "text-primary" : "text-muted-foreground"
+                      }
+                    />
+                  </Button>
+                )}
               </h2>
               <p className="text-muted-foreground mb-1">
                 {currentTrack?.artist || "Unknown artist"}
@@ -133,110 +148,122 @@ export default function MusicPlayer() {
               </p>
             </motion.div>
           </AnimatePresence>
-          <div className="mt-4">
-            <Slider
-              value={[progress]}
-              max={100}
-              step={0.1}
-              onValueChange={handleProgressChange}
-              className="w-full"
-            />
-            <div className="flex justify-between text-sm text-muted-foreground mt-1">
-              <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
-              <span>{formatTime(audioRef.current?.duration || 0)}</span>
-            </div>
-          </div>
-          <div className="flex items-center justify-center md:justify-start gap-4 mt-4">
-            <Button variant="ghost" size="icon" onClick={toggleShuffle}>
-              <Shuffle
-                className={shuffle ? "text-primary" : "text-muted-foreground"}
-              />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setTrackDirection("previous");
-                if (!currentTrack && !isPlaying) {
-                  setIsPlaying(true);
-                  setTrack(playlist[playlist.length - 1]);
-                  return;
-                }
-                prevTrack();
-              }}
-            >
-              <SkipBack />
-            </Button>
-            <Button
-              variant="default"
-              size="icon"
-              onClick={() => {
-                if (!currentTrack && !isPlaying) {
-                  setTrackDirection("next");
-                  setIsPlaying(true);
-                  setTrack(playlist[0]);
-                  return;
-                }
-                setIsPlaying(!isPlaying);
-              }}
-            >
-              {isPlaying ? <Pause /> : <Play />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setTrackDirection("next");
-                if (!currentTrack && !isPlaying) {
-                  setIsPlaying(true);
-                  setTrack(playlist[0]);
-                  return;
-                }
-                nextTrack();
-              }}
-            >
-              <SkipForward />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={toggleRepeat}>
-              <Repeat
-                className={repeat ? "text-primary" : "text-muted-foreground"}
-              />
-            </Button>
-          </div>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`lyrics-${currentTrack?.id}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {currentTrack && (
-                <LyricsDisplay
-                  lyrics={currentTrack.lyrics}
-                  currentTime={currentTime}
+          {showLyrics ? (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`lyrics-${currentTrack?.id}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {currentTrack && (
+                  <LyricsDisplay
+                    lyrics={currentTrack.lyrics}
+                    currentTime={currentTime}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="h-48">
+              <div className="mt-4">
+                <Slider
+                  value={[progress]}
+                  max={100}
+                  step={0.1}
+                  onValueChange={handleProgressChange}
+                  className="w-full"
                 />
-              )}
-            </motion.div>
-          </AnimatePresence>
+                <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                  <span>{formatTime(audioRef.current?.currentTime || 0)}</span>
+                  <span>{formatTime(audioRef.current?.duration || 0)}</span>
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setVolume(volume === 0 ? 0.5 : 0)}
+                >
+                  {volume === 0 ? <VolumeX /> : <Volume2 />}
+                </Button>
+                <Slider
+                  value={[volume * 100]}
+                  max={100}
+                  step={1}
+                  onValueChange={(newVolume) => setVolume(newVolume[0] / 100)}
+                  className="w-full max-w-xs"
+                  trackClassName="h-1"
+                  thumbClassName="size-4"
+                />
+              </div>
+              <div className="flex items-center justify-center md:justify-start gap-4 mt-4">
+                <Button variant="ghost" size="icon" onClick={toggleShuffle}>
+                  <Shuffle
+                    className={
+                      shuffle ? "text-primary" : "text-muted-foreground"
+                    }
+                  />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setTrackDirection("previous");
+                    if (!currentTrack && !isPlaying) {
+                      setIsPlaying(true);
+                      setTrack(playlist[playlist.length - 1]);
+                      return;
+                    }
+                    prevTrack();
+                  }}
+                >
+                  <SkipBack />
+                </Button>
+                <Button
+                  variant="default"
+                  size="icon"
+                  onClick={() => {
+                    if (!currentTrack && !isPlaying) {
+                      setTrackDirection("next");
+                      setIsPlaying(true);
+                      setTrack(playlist[0]);
+                      return;
+                    }
+                    setIsPlaying(!isPlaying);
+                  }}
+                >
+                  {isPlaying ? <Pause /> : <Play />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setTrackDirection("next");
+                    if (!currentTrack && !isPlaying) {
+                      setIsPlaying(true);
+                      setTrack(playlist[0]);
+                      return;
+                    }
+                    nextTrack();
+                  }}
+                >
+                  <SkipForward />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={toggleRepeat}>
+                  <Repeat
+                    className={
+                      repeat ? "text-primary" : "text-muted-foreground"
+                    }
+                  />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      <div className="mt-6 flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setVolume(volume === 0 ? 0.5 : 0)}
-        >
-          {volume === 0 ? <VolumeX /> : <Volume2 />}
-        </Button>
-        <Slider
-          value={[volume * 100]}
-          max={100}
-          step={1}
-          onValueChange={(newVolume) => setVolume(newVolume[0] / 100)}
-          className="w-full max-w-xs"
-        />
-      </div>
+
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Playlist</h3>
         <ul className="space-y-2">
