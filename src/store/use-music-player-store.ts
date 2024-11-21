@@ -1,5 +1,10 @@
 import { create } from "zustand";
 
+interface Lyric {
+  time: number;
+  text: string;
+}
+
 interface Track {
   id: string;
   title: string;
@@ -7,6 +12,7 @@ interface Track {
   album: string;
   cover: string;
   audio: string;
+  lyrics: Lyric[];
 }
 
 interface MusicPlayerStore {
@@ -36,10 +42,23 @@ export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
       id: "track-1",
       title: "Shape Of You",
       artist: "Ed Sheeran",
-      album: "A Night at the Opera",
+      album: "÷ (Divide)",
       cover: "/img/Shape_Of_You_(Official_Single_Cover)_by_Ed_Sheeran.png",
       audio:
         "/sounds/Ed_Sheeran_Shape_Of_You_Official_Lyric_Video_128_kbps.mp3",
+      lyrics: [
+        { time: 0, text: "The club isn't the best place to find a lover" },
+        { time: 4, text: "So the bar is where I go" },
+        { time: 8, text: "Me and my friends at the table doing shots" },
+        { time: 12, text: "Drinking fast and then we talk slow" },
+        { time: 15, text: "The club isn't the best place to find a lover" },
+        { time: 20, text: "So the bar is where I go" },
+        { time: 22, text: "Me and my friends at the table doing shots" },
+        { time: 23, text: "Drinking fast and then we talk slow" },
+        { time: 27, text: "So the bar is where I go" },
+        { time: 30, text: "Me and my friends at the table doing shots" },
+        { time: 40, text: "Drinking fast and then we talk slow" },
+      ],
     },
     {
       id: "track-2",
@@ -48,6 +67,13 @@ export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
       album: "Imagine",
       cover: "/img/jb_ghost_img.jpg",
       audio: "/sounds/Justin_Bieber_-_Ghost_(Lyrics)(256k).mp3",
+      lyrics: [
+        { time: 0, text: "The club isn't the best place to find a lover" },
+        { time: 4, text: "So the bar is where I go" },
+        { time: 8, text: "Me and my friends at the table doing shots" },
+        { time: 12, text: "Drinking fast and then we talk slow" },
+        // ... Add more lyrics
+      ],
     },
     {
       id: "track-3",
@@ -56,6 +82,13 @@ export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
       album: "Thriller",
       cover: "/img/Let-her-go-by-passenger.jpg",
       audio: "/sounds/Passenger_Let_Her_Go_Official_Video_128_kbps.mp3",
+      lyrics: [
+        { time: 0, text: "The club isn't the best place to find a lover" },
+        { time: 4, text: "So the bar is where I go" },
+        { time: 8, text: "Me and my friends at the table doing shots" },
+        { time: 12, text: "Drinking fast and then we talk slow" },
+        // ... Add more lyrics
+      ],
     },
     {
       id: "track-4",
@@ -64,6 +97,20 @@ export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
       album: "Thriller",
       cover: "/img/sparkle_img.jpg",
       audio: "/sounds/Sparkle _ Your Name AMV (128 kbps).mp3",
+      lyrics: [
+        { time: 0, text: "The club isn't the best place to find a lover" },
+        { time: 4, text: "So the bar is where I go" },
+        { time: 8, text: "Me and my friends at the table doing shots" },
+        { time: 12, text: "Drinking fast and then we talk slow" },
+        { time: 15, text: "The club isn't the best place to find a lover" },
+        { time: 20, text: "So the bar is where I go" },
+        { time: 22, text: "Me and my friends at the table doing shots" },
+        { time: 23, text: "Drinking fast and then we talk slow" },
+        { time: 27, text: "So the bar is where I go" },
+        { time: 30, text: "Me and my friends at the table doing shots" },
+        { time: 40, text: "Drinking fast and then we talk slow" },
+        // ... Add more lyrics
+      ],
     },
     {
       id: "track-5",
@@ -73,6 +120,13 @@ export const useMusicPlayerStore = create<MusicPlayerStore>((set, get) => ({
       cover: "/img/nandemonaiya_img.jpg",
       audio:
         "/sounds/NandemonaiyaRadwhimps_from_Your_name_君の名はJpn_Rom_Myan.mp3",
+      lyrics: [
+        { time: 0, text: "The club isn't the best place to find a lover" },
+        { time: 4, text: "So the bar is where I go" },
+        { time: 8, text: "Me and my friends at the table doing shots" },
+        { time: 12, text: "Drinking fast and then we talk slow" },
+        // ... Add more lyrics
+      ],
     },
   ],
   setTrack: (track) => set({ currentTrack: track }),

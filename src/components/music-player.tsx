@@ -18,6 +18,7 @@ import { useMusicPlayerStore } from "@/store/use-music-player-store";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
+import { LyricsDisplay } from "./lyrics-display";
 
 export default function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -37,6 +38,24 @@ export default function MusicPlayer() {
     prevTrack,
   } = useMusicPlayerStore();
   const [trackDirection, setTrackDirection] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const progress =
+        (audioRef.current.currentTime / audioRef.current.duration) * 100;
+      setProgress(progress);
+    }
+  };
+
+  const handleProgressChange = (newProgress: number[]) => {
+    if (audioRef.current) {
+      const newTime = (newProgress[0] / 100) * audioRef.current.duration;
+      audioRef.current.currentTime = newTime;
+      setProgress(newProgress[0]);
+    }
+  };
 
   useEffect(() => {
     if (audioRef.current) {
@@ -54,23 +73,15 @@ export default function MusicPlayer() {
     }
   }, [volume]);
 
-  const handleTimeUpdate = () => {
+  useEffect(() => {
     if (audioRef.current) {
-      const progress =
-        (audioRef.current.currentTime / audioRef.current.duration) * 100;
-      setProgress(progress);
+      const updateTime = () => setCurrentTime(audioRef.current!.currentTime);
+      audioRef.current.addEventListener("timeupdate", updateTime);
+      return () => {
+        audioRef?.current?.removeEventListener("timeupdate", updateTime);
+      };
     }
-  };
-
-  const [progress, setProgress] = React.useState(0);
-
-  const handleProgressChange = (newProgress: number[]) => {
-    if (audioRef.current) {
-      const newTime = (newProgress[0] / 100) * audioRef.current.duration;
-      audioRef.current.currentTime = newTime;
-      setProgress(newProgress[0]);
-    }
-  };
+  }, []);
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-background border rounded-lg shadow-lg">
@@ -192,6 +203,22 @@ export default function MusicPlayer() {
               />
             </Button>
           </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`lyrics-${currentTrack?.id}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {currentTrack && (
+                <LyricsDisplay
+                  lyrics={currentTrack.lyrics}
+                  currentTime={currentTime}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
       <div className="mt-6 flex items-center gap-4">
